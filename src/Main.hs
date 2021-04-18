@@ -193,7 +193,7 @@ runAutomata :: Space CellState -> Int -> Int -> IO ()
 runAutomata s 0 w = putStrLn $ concat $ map show $ boundw w s
 runAutomata s n w = do
   putStrLn $ concat $ map show $ boundw w s
-  runAutomata (step rule3 s) (n - 1) w
+  runAutomata (step rule s) (n - 1) w
 
 main :: IO ()
 main = do
