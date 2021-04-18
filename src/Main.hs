@@ -206,7 +206,7 @@ main = do
   let m = head cs
   let l = take wh $ drop 1 cs
   let r = take wh $ drop wh $ drop 1 cs
-  --let s = Space (l ++ (repeat Dead)) m (r ++ (repeat Dead))
+  let s = Space (l ++ (repeat Dead)) m (r ++ (repeat Dead))
   -- non-random starting position for rule3 (the serpinski triangle)
-  let s = Space (repeat Dead) Alive (repeat Dead)
+  --let s = Space (repeat Dead) Alive (repeat Dead)
   runAutomata s h w
