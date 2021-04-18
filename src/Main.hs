@@ -97,6 +97,22 @@ rule (Space (l:_) _ (r:_))
   | l == r = Dead
   | otherwise = Alive
 
+-- a second rule for example
+rule2 :: Space CellState -> CellState
+rule2 (Space (l1:l2:_) m (r1:r2:_))
+  | m == Alive && numAlive == 1 = Dead
+  | m == Alive && numAlive == 4 = Dead
+  | m == Dead && numAlive == 3 = Alive
+  | otherwise = m
+  where
+    ns = [l1, l2, r1, r2]
+    numAlive = length $ filter (== Alive) ns
+
+rule3 :: Space CellState -> CellState
+rule3 (Space (l:_) m (r:_))
+  | l == r = m
+  | otherwise = if m == Alive then Dead else Alive
+
 -- take a space and a rule and
 -- return the next space
 step :: (Space t -> t) -> Space t -> Space t
@@ -177,7 +193,7 @@ runAutomata :: Space CellState -> Int -> Int -> IO ()
 runAutomata s 0 w = putStrLn $ concat $ map show $ boundw w s
 runAutomata s n w = do
   putStrLn $ concat $ map show $ boundw w s
-  runAutomata (step rule s) (n - 1) w
+  runAutomata (step rule3 s) (n - 1) w
 
 main :: IO ()
 main = do
@@ -190,5 +206,7 @@ main = do
   let m = head cs
   let l = take wh $ drop 1 cs
   let r = take wh $ drop wh $ drop 1 cs
-  let s = Space (l ++ (repeat Dead)) m (r ++ (repeat Dead))
+  --let s = Space (l ++ (repeat Dead)) m (r ++ (repeat Dead))
+  -- non-random starting position for rule3 (the serpinski triangle)
+  let s = Space (repeat Dead) Alive (repeat Dead)
   runAutomata s h w
