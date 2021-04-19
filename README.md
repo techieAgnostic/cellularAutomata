@@ -1,6 +1,13 @@
 # cellularAutomata
 
+!!! WARNING !!!
+this will probably leak memory until i write a clamp function
+also this readme is out of date
+!!! WARNING !!!
+
 a small application for running a one-dimensional cellular automata from random inputs, using comonads
+
+now also supports 2d automata, check out [here](conwayExample.txt) for an example of the current output of the program
 
 ## usage
 
