@@ -13,6 +13,7 @@ data Options = Options
   { optWidth       :: Int
   , optGenerations :: Int
   , optHeight      :: Int
+  , optTime        :: Int
   } deriving Show
 
 -- the default options for the program
@@ -24,6 +25,7 @@ defaultOptions w h = Options
   { optWidth       = w
   , optGenerations = 40
   , optHeight      = h
+  , optTime        = 7
   }
 
 -- the avaliable options
@@ -38,6 +40,9 @@ options =
   , Option ['h'] ["height"]
       (ReqArg (\t opts -> opts { optHeight = (read t) }) "HEIGHT")
       "term height"
+  , Option ['t'] ["time"]
+      (ReqArg (\t opts -> opts { optTime = (read t) }) "TIME")
+      "delay time"
   ]
 
 -- parse the options into the structure
