@@ -1,18 +1,11 @@
 # cellularAutomata
 
-!!! WARNING !!!
-this will probably leak memory until i write a clamp function
-also this readme is out of date
-!!! WARNING !!!
-
-a small application for running a one-dimensional cellular automata from random inputs, using comonads
-
-now also supports 2d automata, check out [here](conwayExample.txt) for an example of the current output of the program
+a small application for running cellular automata from random inputs, using comonads
 
 ## usage
 
 the program will default to the size of the window
-`-w` and `-g` inputs can be given to determine the width and height, respectively
+`-w` and `-h` inputs can be given to determine the width and height, respectively
 
 ## requirements
 
@@ -76,123 +69,8 @@ due to haskell's laziness, the comonad space can (and should) be infinite in bot
 
 as such, the functions to change our focus within the space assumes an infinite list, and i have defaulted to "clamping" our focus at the edges if a finite list is given on either direction. im not sure this is semantically the correct choice, but in regular usage (with infinite lists) it should not come up.
 
-## example
+currently, as we are animating in a window, the program will turn the initially infinite grid into a grid the size of the window, therefore avoidinig memory leaks at the sides.
 
-`./cellularAutomata -w 40 -g 25`
+in the future if we add the ability to render animated gifs of a cellular automata, it may be of use to keep the infinite grid, in the knowledge that we will not be running it indefinitely, but instead collecting garbage at the end of the animation.
 
-```
-██ ████  █ █████   █  ███   █ ███ ███   
-██ █  ███  █   ██ █ ███ ██ █  █ █ █ ██  
- █  ███ ███ █ ███   █ █ ██  ██      ███ 
-  ███ █ █ █   █ ██ █    ███████    ██ ██
-███ █      █ █  ██  █  ██     ██  ███ ██
-  █  █    █   ██████ █████   ██████ █ █ 
-██ ██ █  █ █ ██    █ █   ██ ██    █     
-██ ██  ██    ███  █   █ ███ ███  █ █   █
- █ ███████  ██ ███ █ █  █ █ █ ███   █ ██
-█  █     █████ █ █    ██      █ ██ █  █ 
-███ █   ██   █    █  ████    █  ██  ██  
-█ █  █ ████ █ █  █ ███  ██  █ █████████ 
-   ██  █  █    ██  █ ███████  █       ██
-  █████ ██ █  █████  █     ███ █     ███
- ██   █ ██  ███   ███ █   ██ █  █   ██  
-████ █  █████ ██ ██ █  █ ███  ██ █ ████ 
-   █  ███   █ ██ ██  ██  █ █████   █  ██
-█ █ ███ ██ █  ██ ████████  █   ██ █ ███ 
-█   █ █ ██  ████ █      ███ █ ███   █ █ 
-██ █    █████  █  █    ██ █   █ ██ █    
-██  █  ██   ███ ██ █  ███  █ █  ██  █  █
-████ █████ ██ █ ██  ███ ███   ██████ ███
-   █ █   █ ██   █████ █ █ ██ ██    █ █  
-  █   █ █  ███ ██   █     ██ ███  █   █ 
-██ █ █   ███ █ ███ █ █   ███ █ ███ █ █  
- █    █ ██ █   █ █    █ ██ █   █ █    ██
-```
-
-example using `rule3` and a non-random starting position:
-
-`./cellularAutomata -w 80 -g 80`
-
-```
-                                       █                                        
-                                      ███                                       
-                                     █ █ █                                      
-                                    ██ █ ██                                     
-                                   █   █   █                                    
-                                  ███ ███ ███                                   
-                                 █ █   █   █ █                                  
-                                ██ ██ ███ ██ ██                                 
-                               █       █       █                                
-                              ███     ███     ███                               
-                             █ █ █   █ █ █   █ █ █                              
-                            ██ █ ██ ██ █ ██ ██ █ ██                             
-                           █   █       █       █   █                            
-                          ███ ███     ███     ███ ███                           
-                         █ █   █ █   █ █ █   █ █   █ █                          
-                        ██ ██ ██ ██ ██ █ ██ ██ ██ ██ ██                         
-                       █               █               █                        
-                      ███             ███             ███                       
-                     █ █ █           █ █ █           █ █ █                      
-                    ██ █ ██         ██ █ ██         ██ █ ██                     
-                   █   █   █       █   █   █       █   █   █                    
-                  ███ ███ ███     ███ ███ ███     ███ ███ ███                   
-                 █ █   █   █ █   █ █   █   █ █   █ █   █   █ █                  
-                ██ ██ ███ ██ ██ ██ ██ ███ ██ ██ ██ ██ ███ ██ ██                 
-               █       █               █               █       █                
-              ███     ███             ███             ███     ███               
-             █ █ █   █ █ █           █ █ █           █ █ █   █ █ █              
-            ██ █ ██ ██ █ ██         ██ █ ██         ██ █ ██ ██ █ ██             
-           █   █       █   █       █   █   █       █   █       █   █            
-          ███ ███     ███ ███     ███ ███ ███     ███ ███     ███ ███           
-         █ █   █ █   █ █   █ █   █ █   █   █ █   █ █   █ █   █ █   █ █          
-        ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ███ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██         
-       █                               █                               █        
-      ███                             ███                             ███       
-     █ █ █                           █ █ █                           █ █ █      
-    ██ █ ██                         ██ █ ██                         ██ █ ██     
-   █   █   █                       █   █   █                       █   █   █    
-  ███ ███ ███                     ███ ███ ███                     ███ ███ ███   
- █ █   █   █ █                   █ █   █   █ █                   █ █   █   █ █  
-██ ██ ███ ██ ██                 ██ ██ ███ ██ ██                 ██ ██ ███ ██ ██ 
-       █       █               █       █       █               █       █       █
-█     ███     ███             ███     ███     ███             ███     ███     ██
- █   █ █ █   █ █ █           █ █ █   █ █ █   █ █ █           █ █ █   █ █ █   █ █
- ██ ██ █ ██ ██ █ ██         ██ █ ██ ██ █ ██ ██ █ ██         ██ █ ██ ██ █ ██ ██ █
-       █       █   █       █   █       █       █   █       █   █       █       █
-█     ███     ███ ███     ███ ███     ███     ███ ███     ███ ███     ███     ██
- █   █ █ █   █ █   █ █   █ █   █ █   █ █ █   █ █   █ █   █ █   █ █   █ █ █   █ █
- ██ ██ █ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ █ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ █ ██ ██ █
-       █                               █                               █        
-      ███                             ███                             ███       
-     █ █ █                           █ █ █                           █ █ █      
-    ██ █ ██                         ██ █ ██                         ██ █ ██     
-   █   █   █                       █   █   █                       █   █   █    
-  ███ ███ ███                     ███ ███ ███                     ███ ███ ███   
- █ █   █   █ █                   █ █   █   █ █                   █ █   █   █ █  
-██ ██ ███ ██ ██                 ██ ██ ███ ██ ██                 ██ ██ ███ ██ ██ 
-       █       █               █       █       █               █       █        
-      ███     ███             ███     ███     ███             ███     ███       
-     █ █ █   █ █ █           █ █ █   █ █ █   █ █ █           █ █ █   █ █ █      
-    ██ █ ██ ██ █ ██         ██ █ ██ ██ █ ██ ██ █ ██         ██ █ ██ ██ █ ██     
-   █   █       █   █       █   █       █       █   █       █   █       █   █    
-  ███ ███     ███ ███     ███ ███     ███     ███ ███     ███ ███     ███ ███   
- █ █   █ █   █ █   █ █   █ █   █ █   █ █ █   █ █   █ █   █ █   █ █   █ █   █ █  
-██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ █ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ ██ 
-                                       █                                        
-                                      ███                                       
-                                     █ █ █                                      
-                                    ██ █ ██                                     
-                                   █   █   █                                    
-                                  ███ ███ ███                                   
-                                 █ █   █   █ █                                  
-                                ██ ██ ███ ██ ██                                 
-                               █       █       █                                
-                              ███     ███     ███                               
-                             █ █ █   █ █ █   █ █ █                              
-                            ██ █ ██ ██ █ ██ ██ █ ██                             
-                           █   █       █       █   █                            
-                          ███ ███     ███     ███ ███                           
-                         █ █   █ █   █ █ █   █ █   █ █                          
-                        ██ ██ ██ ██ ██ █ ██ ██ ██ ██ ██                         
-                       █               █               █                        
-```
+this is the difference between a truly infinite grid, and one that is simply larger than our viewspace (but still finite).
