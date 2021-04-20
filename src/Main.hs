@@ -9,7 +9,8 @@ import System.Console.GetOpt
 import System.Environment(getArgs, getProgName)
 import Data.Maybe (fromMaybe)
 import Comonad
-import Spaces
+import Spaces.Space2
+import Spaces.Space1
 import Automata
 import Brick
 import Brick.BChan (newBChan, writeBChan)
@@ -140,7 +141,7 @@ main = do
   g <- initGame
   let buildVty = V.mkVty V.defaultConfig
   initialVty <- buildVty
-  void $ customMain initialVty buildVty (Just chan) (app h w) (clamp2cw w h g)
+  void $ customMain initialVty buildVty (Just chan) (app h w) (clamp2 w h g)
 
 handleEvent :: (Space2 CellState) -> BrickEvent Name Tick -> EventM Name (Next (Space2 CellState))
 handleEvent g (AppEvent Tick) = continue $ step rps g
@@ -153,7 +154,7 @@ drawUI h w g = [ C.center $ drawGrid h w g ]
 drawGrid :: Int -> Int -> Space2 CellState -> Widget Name
 drawGrid h w g = vBox rows
   where
-    bw = bound2cw w h g   
+    bw = mat2 g   
     rows = [ hBox $ cellsInRow r | r <- bw ]
     cellsInRow y = map drawCell y
 
@@ -166,3 +167,21 @@ rockAttr, scissorsAttr, paperAttr :: AttrName
 rockAttr = "rockAttr"
 paperAttr = "paperAttr"
 scissorsAttr = "scissorsAttr"
+
+createRandSpace :: Random a => StdGen -> Space a
+createRandSpace rng =
+  Space (tail $ map snd $ iterate f (r1, (fst (random rng))))
+        (fst (random rng))
+        (tail $ map snd $ iterate f (r2, (fst (random rng))))
+  where
+    f (r,b) = let (nb,nr) = (random r) in (nr,nb)
+    (r1,r2) = split rng
+
+createRandSpace2 :: Random a => StdGen -> Space2 a
+createRandSpace2 rng = 
+  Space2 (tail $ map snd $ iterate f (r1, (createRandSpace r1)))
+         (createRandSpace rng)
+         (tail $ map snd $ iterate f (r2, (createRandSpace r2)))
+  where
+    f (r,s) = let (nr1,nr2) = split r in (nr2, (createRandSpace nr1))
+    (r1,r2) = split rng

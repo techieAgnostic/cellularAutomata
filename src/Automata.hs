@@ -3,7 +3,8 @@
 module Automata where
 
 import Comonad
-import Spaces
+import Spaces.Space1
+import Spaces.Space2
 import System.Random
 import GHC.Generics
 import Control.DeepSeq
