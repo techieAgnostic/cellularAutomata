@@ -1,4 +1,5 @@
-{ mkDerivation, base, brick, lib, ncurses, process, random, turtle
+{ mkDerivation, base, brick, containers, deepseq, lib, linear
+, microlens, microlens-th, ncurses, process, random, turtle, vty
 }:
 mkDerivation {
   pname = "cellularAutomata";
@@ -6,7 +7,10 @@ mkDerivation {
   src = ./..;
   isLibrary = false;
   isExecutable = true;
-  executableHaskellDepends = [ base brick process random turtle ];
+  executableHaskellDepends = [
+    base brick containers deepseq linear microlens microlens-th process
+    random turtle vty
+  ];
   executableSystemDepends = [ ncurses ];
   license = "unknown";
   hydraPlatforms = lib.platforms.none;
