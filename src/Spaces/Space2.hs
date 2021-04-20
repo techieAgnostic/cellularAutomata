@@ -3,10 +3,12 @@
 module Spaces.Space2 where
 
 import Comonad
+import Spaces.Space1
+
+import System.Random
 import Data.Maybe
 import Control.DeepSeq
 import GHC.Generics
-import Spaces.Space1
 
 -- a nested space
 data Space2 t = Space2 [(Space t)] (Space t) [(Space t)]
@@ -36,16 +38,16 @@ f g (Space l m r) = case (g m) of
 
 -- comonad instance for our 2d space
 instance Comonad Space2 where
-  duplicate w =
-    Space2 (finterate (f up2) dm) dm (finterate (f down2) dm)
-      where
-        dm = Space (finterate left2 w) w (finterate right2 w)
   -- to duplicate we must recursively duplicate in all directions
   -- the focussed space becomes the whole space, with left and right
   -- mapped to each side.
   -- to do the up and down lists, each needs to be the middle space
   -- mapped up and down as far as we can.
   -- up2 and down2 will return Nothing when they cant go further
+  duplicate w =
+    Space2 (finterate (f up2) dm) dm (finterate (f down2) dm)
+      where
+        dm = Space (finterate left2 w) w (finterate right2 w)
   -- to extract we simply recursively extract
   extract (Space2 _ m _) = extract m
 
@@ -108,3 +110,13 @@ matn2 w h = mat2 . (clamp2 w h)
 
 step :: Comonad w => (w t -> t) -> w t -> w t
 step f w = w =>> f
+
+-- create a randomly filled space
+createRandSpace2 :: Random a => StdGen -> Space2 a
+createRandSpace2 rng = 
+  Space2 (tail $ map snd $ iterate f (r1, (createRandSpace r1)))
+         (createRandSpace rng)
+         (tail $ map snd $ iterate f (r2, (createRandSpace r2)))
+  where
+    f (r,s) = let (nr1,nr2) = split r in (nr2, (createRandSpace nr1))
+    (r1,r2) = split rng

@@ -3,6 +3,8 @@
 module Spaces.Space1 where
 
 import Comonad
+
+import System.Random
 import Control.DeepSeq
 import GHC.Generics
 
@@ -65,3 +67,12 @@ mat (Space l m r) = (reverse l) ++ (m:r)
 matn :: Int -> Space t -> [t]
 matn n = mat . (clamp n)
 
+-- create a randomly filled space
+createRandSpace :: Random a => StdGen -> Space a
+createRandSpace rng =
+  Space (tail $ map snd $ iterate f (r1, (fst (random rng))))
+        (fst (random rng))
+        (tail $ map snd $ iterate f (r2, (fst (random rng))))
+  where
+    f (r,b) = let (nb,nr) = (random r) in (nr,nb)
+    (r1,r2) = split rng

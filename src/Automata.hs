@@ -8,6 +8,7 @@ import Spaces.Space2
 import System.Random
 import GHC.Generics
 import Control.DeepSeq
+import Data.Maybe
 
 -----------------------
 -- cellular automata --
@@ -59,32 +60,77 @@ instance Show CellState
 --   | l == r = m
 --   | otherwise = if m == Alive then Dead else Alive
 
+------------------------
+-- grabbing neighbors --
+------------------------
+
+-- we want to be able to create a list of (Maybe CellState)
+-- representing each neighbor, this way it will work on the
+-- edges, and also we can fix the position of ecah neighbor
+-- so that rules can be directional also.
+
+grabNeighbors :: Space2 CellState -> [(Maybe CellState)]
+grabNeighbors s = let
+  tl = grabTopLeft s
+  t  = grabTop s
+  tr = grabTopRight s
+  l  = grabLeft s
+  r  = grabRight s
+  bl = grabBotLeft s
+  b  = grabBot s
+  br = grabBotRight s
+  in [tl, t, tr, l, r, bl, b, br]
+
+grabTemplate :: (Space2 CellState -> Maybe (Space2 CellState))
+  -> Space2 CellState -> Maybe CellState
+grabTemplate f s = case f s of
+  Nothing -> Nothing
+  Just x -> Just $ extract x
+
+grabTop, grabBot, grabLeft, grabRight :: Space2 CellState -> Maybe CellState
+grabTop = grabTemplate up2
+grabBot = grabTemplate down2
+grabLeft = grabTemplate left2
+grabRight = grabTemplate right2
+
+maycom :: (a -> Maybe a) -> (a -> Maybe a) -> a -> Maybe a
+maycom f g s = do
+  x <- f s
+  y <- g x
+  return y
+
+grabTopLeft, grabTopRight, grabBotLeft, grabBotRight :: Space2 CellState -> Maybe CellState
+grabTopLeft = grabTemplate (maycom up2 left2)
+grabTopRight = grabTemplate (maycom up2 right2)
+grabBotLeft = grabTemplate (maycom down2 left2)
+grabBotRight = grabTemplate (maycom down2 right2)
+
+filtJust :: [(Maybe a)] -> [a]
+filtJust [] = []
+filtJust (Nothing:as) = filtJust as
+filtJust ((Just a):as) = a:(filtJust as)
+
+numMatch :: CellState -> [(Maybe CellState)] -> Int
+numMatch c = length . (filter (== c)) . filtJust
+
 --------------
 -- 2d rules --
 --------------
 
-rps :: Space2 CellState -> CellState
-rps (Space2 u m d)
-  = case me of
-      Rock -> if (length $ filter (== Paper) ns) > 2 then Paper else Rock
-      Paper -> if (length $ filter (== Scissors) ns) > 2 then Scissors else Paper
-      Scissors -> if (length $ filter (== Rock) ns) > 2 then Rock else Scissors
+conway :: Space2 CellState -> CellState
+conway s = case extract s of
+  Rock -> Paper
+  Paper -> if numSci == 3 then Scissors else Paper
+  Scissors -> if numSci == 2 || numSci == 3 then Scissors else Paper
   where
-    f b (Space (l:_) m (r:_)) = [l,r] ++ (if b then [m] else [])
-    f b (Space [] m (r:_)) = [r] ++ (if b then [m] else [])
-    f b (Space (l:_) m []) = [l] ++ (if b then [m] else [])
-    f b (Space [] m []) = if b then [m] else []
-    safeHead _ [] = []
-    safeHead b (x:_) = f b x
-    ns = concat [ (safeHead True u), (f False m), (safeHead True d) ]
-    me = extract m
+    numSci = numMatch Scissors ns
+    ns = grabNeighbors s
 
---conway :: Space2 CellState -> CellState
---conway (Space2 (u:_) m (d:_))
---  = case me of
---      Alive -> if (length ns) == 2 || (length ns == 3) then Alive else Dead
---      Dead -> if (length ns) == 3 then Alive else Dead
---  where
---    f b (Space (l:_) m (r:_)) = [l,r] ++ (if b then [m] else [])
---    ns = filter (== Alive) $ concat [ (f True u), (f False m), (f True d) ]
---    me = extract m
+rps :: Space2 CellState -> CellState
+rps s
+  = case extract s of
+      Rock -> if (numNs Paper) > 2 then Paper else Rock
+      Paper -> if (numNs Scissors) > 2 then Scissors else Paper
+      Scissors -> if (numNs Rock) > 2 then Rock else Scissors
+  where
+    numNs c = numMatch c $ grabNeighbors s
